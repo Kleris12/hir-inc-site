@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HIR INC. – Services de nettoyage</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+  // ⚠️ Remplacez ces valeurs par vos vraies clés EmailJS
+  const EMAILJS_PUBLIC_KEY   = 'BccEWfzICUvnnzoRC';
+  const EMAILJS_SERVICE_ID   = 'service_9klxxqg';
+  const EMAILJS_TEMPLATE_ID  = 'fo34jyw';
+  emailjs.init(EMAILJS_PUBLIC_KEY);
+</script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --blue: #0a2a5e;
+    --blue-mid: #1a4a9e;
+    --yellow: #f5c800;
+    --yellow-light: #fff4b0;
+    --white: #ffffff;
+    --gray: #f5f6f8;
+    --text: #111827;
+    --text-muted: #6b7280;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--white); overflow-x: hidden; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: var(--blue);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 6vw; height: 64px;
+  }
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px; letter-spacing: 2px; color: var(--yellow);
+  }
+  .nav-logo span { color: var(--white); font-size: 13px; font-family: 'DM Sans', sans-serif; font-weight: 300; letter-spacing: 0; display: block; margin-top: -4px; }
+  .nav-links { display: flex; gap: 28px; }
+  .nav-links a { color: rgba(255,255,255,0.8); text-decoration: none; font-size: 14px; font-weight: 400; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--yellow); }
+  .nav-cta {
+    background: var(--yellow); color: var(--blue);
+    border: none; padding: 9px 22px; border-radius: 4px;
+    font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif;
+    transition: background 0.2s;
+  }
+  .nav-cta:hover { background: #ffe033; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    background: var(--blue);
+    display: flex; align-items: center;
+    padding: 80px 6vw 60px;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; top: -80px; right: -120px;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    border: 80px solid rgba(245,200,0,0.08);
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -200px; right: 5vw;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    border: 60px solid rgba(245,200,0,0.05);
+  }
+  .hero-content { max-width: 640px; position: relative; z-index: 1; }
+  .hero-tag {
+    display: inline-block;
+    background: var(--yellow); color: var(--blue);
+    font-size: 11px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase;
+    padding: 5px 14px; border-radius: 2px; margin-bottom: 28px;
+  }
+  .hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 8vw, 90px); line-height: 1;
+    color: var(--white); letter-spacing: 1px;
+    margin-bottom: 24px;
+  }
+  .hero h1 em { color: var(--yellow); font-style: normal; }
+  .hero p {
+    color: rgba(255,255,255,0.72); font-size: 17px; line-height: 1.7;
+    max-width: 480px; margin-bottom: 40px;
+  }
+  .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--yellow); color: var(--blue);
+    padding: 14px 30px; border-radius: 4px;
+    font-size: 15px; font-weight: 500; text-decoration: none;
+    transition: background 0.2s, transform 0.15s;
+    display: inline-block;
+  }
+  .btn-primary:hover { background: #ffe033; transform: translateY(-1px); }
+  .btn-outline {
+    border: 1.5px solid rgba(255,255,255,0.4); color: var(--white);
+    padding: 14px 30px; border-radius: 4px;
+    font-size: 15px; font-weight: 400; text-decoration: none;
+    transition: border-color 0.2s, background 0.2s;
+    display: inline-block;
+  }
+  .btn-outline:hover { border-color: var(--yellow); color: var(--yellow); }
+  .hero-stats {
+    display: flex; gap: 40px; margin-top: 64px;
+    border-top: 1px solid rgba(255,255,255,0.1); padding-top: 40px;
+  }
+  .hero-stat-num {
+    font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: var(--yellow);
+    line-height: 1; margin-bottom: 4px;
+  }
+  .hero-stat-label { color: rgba(255,255,255,0.5); font-size: 13px; }
+
+  /* STRIP */
+  .strip {
+    background: var(--yellow);
+    padding: 18px 6vw;
+    display: flex; align-items: center; gap: 40px;
+    overflow: hidden;
+  }
+  .strip-item { white-space: nowrap; font-size: 14px; font-weight: 500; color: var(--blue); display: flex; align-items: center; gap: 8px; }
+  .strip-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--blue); opacity: 0.4; }
+
+  /* SERVICES */
+  .section { padding: 100px 6vw; }
+  .section-label {
+    font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--yellow); font-weight: 500; margin-bottom: 14px;
+    padding-left: 2px;
+  }
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 5vw, 56px); color: var(--blue); letter-spacing: 1px;
+    margin-bottom: 14px;
+  }
+  .section-sub { color: var(--text-muted); font-size: 16px; max-width: 480px; line-height: 1.6; margin-bottom: 56px; }
+  .services-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 2px;
+  }
+  .service-card {
+    background: var(--gray);
+    padding: 40px 32px;
+    transition: background 0.25s;
+    position: relative; overflow: hidden;
+  }
+  .service-card:hover { background: var(--blue); }
+  .service-card:hover .service-icon { color: var(--yellow); }
+  .service-card:hover .service-name { color: var(--white); }
+  .service-card:hover .service-desc { color: rgba(255,255,255,0.6); }
+  .service-card:hover .service-num { color: rgba(255,255,255,0.1); }
+  .service-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 72px; color: rgba(0,0,0,0.04);
+    position: absolute; top: 12px; right: 20px;
+    line-height: 1; transition: color 0.25s;
+  }
+  .service-icon { font-size: 28px; margin-bottom: 20px; display: block; color: var(--blue); transition: color 0.25s; }
+  .service-name {
+    font-family: 'Bebas Neue', sans-serif; font-size: 22px;
+    color: var(--blue); letter-spacing: 1px; margin-bottom: 10px; transition: color 0.25s;
+  }
+  .service-desc { font-size: 14px; color: var(--text-muted); line-height: 1.6; transition: color 0.25s; }
+
+  /* ABOUT */
+  .about { background: var(--blue); padding: 100px 6vw; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+  .about-label { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--yellow); font-weight: 500; margin-bottom: 14px; }
+  .about-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(36px, 4vw, 52px); color: var(--white); letter-spacing: 1px; margin-bottom: 24px; }
+  .about-text { color: rgba(255,255,255,0.65); font-size: 16px; line-height: 1.8; margin-bottom: 20px; }
+  .about-features { display: flex; flex-direction: column; gap: 16px; margin-top: 36px; }
+  .about-feat {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 16px 20px;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 6px;
+  }
+  .about-feat-icon { color: var(--yellow); font-size: 18px; margin-top: 1px; flex-shrink: 0; }
+  .about-feat-text { font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.5; }
+  .about-feat-title { font-weight: 500; color: var(--white); margin-bottom: 2px; font-size: 14px; }
+  .about-visual {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 50px 40px;
+    display: flex; flex-direction: column; gap: 28px;
+  }
+  .about-stat { text-align: center; }
+  .about-stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 56px; color: var(--yellow); line-height: 1; }
+  .about-stat-text { color: rgba(255,255,255,0.5); font-size: 13px; margin-top: 4px; }
+  .divider { height: 1px; background: rgba(255,255,255,0.08); }
+
+  /* PROCESS */
+  .process-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin-top: 0; }
+  .process-step {
+    background: var(--gray); padding: 36px 28px;
+    position: relative;
+  }
+  .step-number {
+    font-family: 'Bebas Neue', sans-serif; font-size: 14px; letter-spacing: 2px;
+    color: var(--yellow); margin-bottom: 16px; display: block;
+  }
+  .step-title { font-size: 16px; font-weight: 500; color: var(--blue); margin-bottom: 10px; }
+  .step-text { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+  /* CTA */
+  .cta-section {
+    background: var(--yellow); padding: 90px 6vw;
+    display: flex; align-items: center; justify-content: space-between; gap: 40px; flex-wrap: wrap;
+  }
+  .cta-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(36px, 5vw, 60px); color: var(--blue); letter-spacing: 1px; max-width: 560px; }
+  .cta-sub { color: rgba(10,42,94,0.65); font-size: 16px; margin-top: 10px; }
+  .btn-dark { background: var(--blue); color: var(--white); padding: 16px 36px; border-radius: 4px; font-size: 16px; font-weight: 500; text-decoration: none; display: inline-block; transition: background 0.2s; }
+  .btn-dark:hover { background: #0f3870; }
+
+  /* CONTACT */
+  .contact { padding: 100px 6vw; background: var(--white); }
+  .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; margin-top: 0; }
+  .contact-cards { display: flex; flex-direction: column; gap: 16px; }
+  .contact-card {
+    display: flex; align-items: center; gap: 18px;
+    padding: 22px 24px;
+    border: 1px solid #e5e7eb; border-radius: 8px;
+  }
+  .contact-card-icon {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--yellow-light); display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .contact-card-label { font-size: 12px; color: var(--text-muted); margin-bottom: 2px; }
+  .contact-card-value { font-size: 16px; font-weight: 500; color: var(--blue); text-decoration: none; }
+  .contact-card-value:hover { text-decoration: underline; }
+  .contact-form { display: flex; flex-direction: column; gap: 14px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group label { font-size: 13px; font-weight: 500; color: var(--text); }
+  .form-group input, .form-group textarea, .form-group select {
+    padding: 11px 14px; border: 1px solid #d1d5db; border-radius: 6px;
+    font-size: 14px; font-family: 'DM Sans', sans-serif; color: var(--text);
+    background: var(--white); outline: none; transition: border-color 0.2s;
+  }
+  .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--blue); }
+  .form-group textarea { min-height: 120px; resize: vertical; }
+  .form-submit {
+    background: var(--blue); color: var(--white); border: none;
+    padding: 14px 28px; border-radius: 4px; font-size: 15px; font-weight: 500;
+    cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s;
+    align-self: flex-start; margin-top: 6px;
+  }
+  .form-submit:hover { background: #0f3870; }
+
+  /* FOOTER */
+  footer {
+    background: var(--blue);
+    padding: 48px 6vw;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;
+  }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 24px; color: var(--yellow); letter-spacing: 2px; }
+  .footer-copy { font-size: 13px; color: rgba(255,255,255,0.4); }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a { font-size: 13px; color: rgba(255,255,255,0.5); text-decoration: none; }
+  .footer-links a:hover { color: var(--yellow); }
+
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .about { grid-template-columns: 1fr; }
+    .process-grid { grid-template-columns: 1fr 1fr; }
+    .contact-grid { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+    .hero-stats { gap: 28px; }
+    footer { flex-direction: column; align-items: flex-start; }
+  }
+  @media (max-width: 480px) { .process-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">HIR INC.<span>Hubert Innovation Reference</span></div>
+  <div class="nav-links">
+    <a href="#services">Services</a>
+    <a href="#apropos">À propos</a>
+    <a href="#processus">Processus</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <button class="nav-cta" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Obtenir un devis</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="accueil">
+  <div class="hero-content">
+    <div class="hero-tag">Résidentiel & Commercial</div>
+    <h1>La <em>propreté</em><br>à votre service</h1>
+    <p>HIR INC. offre des services de nettoyage résidentiel et commercial de haute qualité dans la 
+      région du Québec et du Grand-Moncton. Fiable, professionnel, irréprochable.</p>
+    <div class="hero-actions">
+      <a href="#contact" class="btn-primary">Demander un devis gratuit</a>
+      <a href="#services" class="btn-outline">Nos services</a>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <div class="hero-stat-num">100%</div>
+        <div class="hero-stat-label">Satisfaction garantie</div>
+      </div>
+      <div>
+        <div class="hero-stat-num">2</div>
+        <div class="hero-stat-label">Régions desservies</div>
+      </div>
+      <div>
+        <div class="hero-stat-num">Pro</div>
+        <div class="hero-stat-label">Équipe qualifiée</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STRIP -->
+<div class="strip">
+  <div class="strip-item">✔ Nettoyage résidentiel</div>
+  <div class="strip-dot"></div>
+  <div class="strip-item">✔ Nettoyage commercial</div>
+  <div class="strip-dot"></div>
+  <div class="strip-item">✔ Devis gratuit & rapide</div>
+  <div class="strip-dot"></div>
+  <div class="strip-item">✔ Résultats garantis</div>
+  <div class="strip-dot"></div>
+  <div class="strip-item">✔ Équipe locale de confiance</div>
+</div>
+
+<!-- SERVICES -->
+<section class="section" id="services">
+  <div class="section-label">Ce que nous offrons</div>
+  <h2 class="section-title">Nos services</h2>
+  <p class="section-sub">Des solutions de nettoyage adaptées à vos besoins, pour particuliers et entreprises.</p>
+  <div class="services-grid">
+    <div class="service-card">
+      <span class="service-num">01</span>
+      <span class="service-icon">🏠</span>
+      <div class="service-name">Résidentiel</div>
+      <p class="service-desc">Nettoyage complet de votre domicile — salles de bain, cuisine, planchers, fenêtres — pour un intérieur impeccable.</p>
+    </div>
+    <div class="service-card">
+      <span class="service-num">02</span>
+      <span class="service-icon">🏢</span>
+      <div class="service-name">Commercial</div>
+      <p class="service-desc">Entretien de bureaux, commerces et espaces professionnels. Plans d'entretien sur mesure pour votre établissement.</p>
+    </div>
+    <div class="service-card">
+      <span class="service-num">03</span>
+      <span class="service-icon">✨</span>
+      <div class="service-name">Nettoyage en profondeur</div>
+      <p class="service-desc">Nettoyage intensif pour les grands ménages, changements de locataires ou événements spéciaux.</p>
+    </div>
+    <div class="service-card">
+      <span class="service-num">04</span>
+      <span class="service-icon">🔄</span>
+      <div class="service-name">Entretien régulier</div>
+      <p class="service-desc">Planifiez des visites hebdomadaires, bimensuelles ou mensuelles selon votre rythme et votre budget.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="apropos">
+  <div>
+    <div class="about-label">Qui sommes-nous</div>
+    <h2 class="about-title">Une équipe locale qui fait la différence</h2>
+    <p class="about-text">HIR INC. (Hubert Innovation Reference Incorporate) est une entreprise de nettoyage 
+      ancrée dans la communauté. Nous servons les régions du Québec et du Grand-Moncton avec professionnalisme et rigueur.</p>
+    <p class="about-text">Notre engagement : des résultats visibles, une équipe ponctuelle et des produits efficaces qui respectent votre espace.</p>
+    <div class="about-features">
+      <div class="about-feat">
+        <span class="about-feat-icon">✔</span>
+        <div><div class="about-feat-title">Fiabilité & ponctualité</div><div class="about-feat-text">Nous respectons nos engagements et vos horaires.</div></div>
+      </div>
+      <div class="about-feat">
+        <span class="about-feat-icon">✔</span>
+        <div><div class="about-feat-title">Produits professionnels</div><div class="about-feat-text">Matériel et produits de qualité professionnelle pour de vrais résultats.</div></div>
+      </div>
+      <div class="about-feat">
+        <span class="about-feat-icon">✔</span>
+        <div><div class="about-feat-title">Service personnalisé</div><div class="about-feat-text">Chaque client est unique — nous adaptons notre approche à vos besoins.</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="about-visual">
+     <div class="about-stat">
+      <div class="about-stat-num">QC</div>
+      <div class="about-stat-text">Québec</div>
+    </div>
+    <div class="divider"></div>
+     <div class="about-stat">
+      <div class="about-stat-num">NB</div>
+      <div class="about-stat-text">Nouveau-Brunswick</div>
+    </div>
+    <div class="divider"></div>
+    <div class="about-stat">
+      <div class="about-stat-num">2+</div>
+      <div class="about-stat-text">Régions desservies</div>
+    </div>
+    <div class="divider"></div>
+    <div class="about-stat">
+      <div class="about-stat-num">100%</div>
+      <div class="about-stat-text">Satisfaction client</div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESSUS -->
+<section class="section" id="processus">
+  <div class="section-label">Comment ça marche</div>
+  <h2 class="section-title">Notre processus</h2>
+  <p class="section-sub">Simple, rapide et sans surprise — voici comment on travaille ensemble.</p>
+  <div class="process-grid">
+    <div class="process-step">
+      <span class="step-number">ÉTAPE 01</span>
+      <div class="step-title">Contact & devis</div>
+      <p class="step-text">Communiquez avec nous par téléphone. Nous évaluons vos besoins et vous soumettons une soumission gratuite.</p>
+    </div>
+    <div class="process-step">
+      <span class="step-number">ÉTAPE 02</span>
+      <div class="step-title">Planification</div>
+      <p class="step-text">Nous convenons ensemble d'un horaire qui vous convient, que ce soit ponctuel ou récurrent.</p>
+    </div>
+    <div class="process-step">
+      <span class="step-number">ÉTAPE 03</span>
+      <div class="step-title">Intervention</div>
+      <p class="step-text">Notre équipe se présente à l'heure et effectue le travail avec soin et professionnalisme.</p>
+    </div>
+    <div class="process-step">
+      <span class="step-number">ÉTAPE 04</span>
+      <div class="step-title">Satisfaction garantie</div>
+      <p class="step-text">Votre satisfaction est notre priorité. Si quelque chose ne vous convient pas, on s'en occupe.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BANNER -->
+<div class="cta-section">
+  <div>
+    <h2 class="cta-title">Prêt pour un espace impeccable ?</h2>
+    <p class="cta-sub">Contactez-nous dès aujourd'hui pour une soumission gratuite sans engagement.</p>
+  </div>
+  <a href="#contact" class="btn-dark">Nous contacter maintenant</a>
+</div>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="section-label">Rejoignez-nous</div>
+  <h2 class="section-title">Contact</h2>
+  <p class="section-sub">Disponibles pour répondre à vos questions et organiser votre service dès que possible.</p>
+  <div class="contact-grid">
+    <div class="contact-cards">
+      <div class="contact-card">
+        <div class="contact-card-icon">📞</div>
+        <div>
+          <div class="contact-card-label">Québec</div>
+          <a href="tel:4388354975" class="contact-card-value">438-835-4975</a>
+        </div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-card-icon">📞</div>
+        <div>
+          <div class="contact-card-label">Nouveau-Brunswick</div>
+           <a href="tel:4388354975" class="contact-card-value">506-588-9417</a>
+        </div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-card-icon">📍</div>
+        <div>
+          <div class="contact-card-label">Régions desservies</div>
+          <div class="contact-card-value" style="font-size:15px;">Nouveau-Brunswick & Québec</div>
+        </div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-card-icon">🕐</div>
+        <div>
+          <div class="contact-card-label">Disponibilité</div>
+          <div class="contact-card-value" style="font-size:15px;">Lundi – Dimanche</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <form class="contact-form" id="contactForm">
+        <div class="form-row">
+          <div class="form-group"><label>Prénom</label><input type="text" name="from_firstname" placeholder="Jean" required></div>
+          <div class="form-group"><label>Nom</label><input type="text" name="from_lastname" placeholder="Tremblay" required></div>
+        </div>
+        <div class="form-group"><label>Courriel</label><input type="email" name="from_email" placeholder="jean@exemple.com" required></div>
+        <div class="form-group"><label>Téléphone</label><input type="tel" name="from_phone" placeholder="506-123-4567"></div>
+        <div class="form-group">
+          <label>Type de service</label>
+          <select name="service_type" required>
+            <option value="">Sélectionner...</option>
+            <option>Nettoyage résidentiel</option>
+            <option>Nettoyage commercial</option>
+            <option>Nettoyage en profondeur</option>
+            <option>Entretien régulier</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Message</label><textarea name="message" placeholder="Décrivez vos besoins ou posez vos questions..."></textarea></div>
+        <button type="submit" class="form-submit" id="submitBtn">Envoyer la demande</button>
+      </form>
+      <script>
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+          e.preventDefault();
+          const btn = document.getElementById('submitBtn');
+          btn.textContent = 'Envoi en cours...';
+          btn.disabled = true;
+
+          emailjs.sendForm(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, this)
+            .then(() => {
+              btn.textContent = '✔ Message envoyé !';
+              btn.style.background = '#16a34a';
+              this.reset();
+              setTimeout(() => {
+                btn.textContent = 'Envoyer la demande';
+                btn.style.background = '';
+                btn.disabled = false;
+              }, 4000);
+            })
+            .catch((error) => {
+              btn.textContent = 'Erreur — réessayez';
+              btn.style.background = '#dc2626';
+              btn.disabled = false;
+              console.error('EmailJS error:', error);
+            });
+        });
+      </script>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">HIR INC.</div>
+  <div class="footer-copy">© 2025 HIR INC. – Tous droits réservés</div>
+  <div class="footer-links">
+    <a href="#accueil">Accueil</a>
+    <a href="#services">Services</a>
+    <a href="#contact">Contact</a>
+  </div>
+</footer>
+
+</body>
+</html>
